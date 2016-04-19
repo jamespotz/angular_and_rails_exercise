@@ -1,6 +1,7 @@
 receta = angular.module('receta', [
   'templates',
   'ngRoute',
+  'ngResource',
   'controllers'
 ])
 
@@ -37,7 +38,8 @@ controllers.controller('RecipesController', [
   '$scope',
   '$routeParams',
   '$location',
-  ($scope, $routeParams, $location) ->
+  '$resource',
+  ($scope, $routeParams, $location, $resource) ->
     $scope.search = (keywords)-> $location.path('/').search('keywords', keywords)
 
     if $routeParams.keywords
