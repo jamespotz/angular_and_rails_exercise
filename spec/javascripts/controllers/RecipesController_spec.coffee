@@ -5,6 +5,9 @@ describe "RecipesController", ->
   routeParams = null
   resource    = null
 
+  # access injected service
+  httpBackend = null
+
   setupController =(keywords)->
     inject(($location, $routeParams, $rootScope, $resource, $controller)->
       scope       = $rootScope.$new()
@@ -13,6 +16,12 @@ describe "RecipesController", ->
       routeParams = $routeParams
       routeParams.keywords = keywords
 
+      #capture the injected service
+      httpBackend = $httpBackend
+      if results
+        request = new RegExp("\/recipes.*keywords=#{keywords}")
+        httpBackend.expectGET(request).respond(results)
+
       ctrl        = $controller('RecipesController',
           $scope: scope
           $location: location)
@@ -20,5 +29,16 @@ describe "RecipesController", ->
   beforeEach(module("receta"))
   beforeEach(setupController())
 
+  afterEach ->
+    httpBackend.verifyNoOutstandingExpectation()
+    httpBackend.verifyNoOutstandingRequest()
+
   it "defaults to no recipes", ->
     expect(scope.recipes).toEqualData([])
+
+describe 'controller initialization', ->
+  describe 'when no keywords present', ->
+    beforeEach(setupController())
+
+    it "defaults to no recipes", ->
+      expect(results).toEqualData([])
